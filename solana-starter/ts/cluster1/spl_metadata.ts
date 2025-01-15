@@ -1,8 +1,8 @@
-import wallet from "../dev-wallet.json"
+import wallet from "../wba-wallet.json"
 import { createUmi } from "@metaplex-foundation/umi-bundle-defaults"
-import { 
-    createMetadataAccountV3, 
-    CreateMetadataAccountV3InstructionAccounts, 
+import {
+    createMetadataAccountV3,
+    CreateMetadataAccountV3InstructionAccounts,
     CreateMetadataAccountV3InstructionArgs,
     DataV2Args
 } from "@metaplex-foundation/mpl-token-metadata";
@@ -10,7 +10,7 @@ import { createSignerFromKeypair, signerIdentity, publicKey } from "@metaplex-fo
 import { bs58 } from "@coral-xyz/anchor/dist/cjs/utils/bytes";
 
 // Define our Mint address
-const mint = publicKey("<mint address>")
+const mint = publicKey("5Z3yjpascdAvJhwd3of5BfBJsU6EZhN7XDRaRMwX4jyS")
 
 // Create a UMI connection
 const umi = createUmi('https://api.devnet.solana.com');
@@ -21,29 +21,38 @@ umi.use(signerIdentity(createSignerFromKeypair(umi, keypair)));
 (async () => {
     try {
         // Start here
-        // let accounts: CreateMetadataAccountV3InstructionAccounts = {
-        //     ???
-        // }
+        let accounts: CreateMetadataAccountV3InstructionAccounts = {
+            mint,
+            mintAuthority: signer,
+        }
 
-        // let data: DataV2Args = {
-        //     ???
-        // }
+        let data: DataV2Args = {
+            name: "Zwitchie",
+            symbol: "ZWC",
+            uri: "https://www.circle.com/hs-fs/hubfs/sundaes/USDC.png?width=540&height=540&name=USDC.png",
+            sellerFeeBasisPoints: 100,
+            creators: null,
+            collection: null,
+            uses: null,
+        }
 
-        // let args: CreateMetadataAccountV3InstructionArgs = {
-        //     ???
-        // }
+        let args: CreateMetadataAccountV3InstructionArgs = {
+            data,
+            isMutable: false,
+            collectionDetails: null,
+        }
 
-        // let tx = createMetadataAccountV3(
-        //     umi,
-        //     {
-        //         ...accounts,
-        //         ...args
-        //     }
-        // )
+        let tx = createMetadataAccountV3(
+            umi,
+            {
+                ...accounts,
+                ...args
+            }
+        )
 
-        // let result = await tx.sendAndConfirm(umi);
-        // console.log(bs58.encode(result.signature));
-    } catch(e) {
+        let result = await tx.sendAndConfirm(umi);
+        console.log(bs58.encode(result.signature));
+    } catch (e) {
         console.error(`Oops, something went wrong: ${e}`)
     }
 })();
