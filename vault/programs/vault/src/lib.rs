@@ -50,7 +50,7 @@ pub struct Initialize<'info> {
     )]
     pub vault_state: Account<'info, VaultState>,
     #[account(
-        seeds = [b"vault", signer.key().as_ref()],
+        seeds = [b"vault", vault_state.key().as_ref()],
         bump,
     )]
     pub vault: SystemAccount<'info>,
@@ -76,7 +76,8 @@ pub struct Payment<'info> {
     )]
     pub vault_state: Account<'info, VaultState>,
     #[account(
-        seeds = [b"vault", signer.key().as_ref()],
+        mut,
+        seeds = [b"vault", vault_state.key().as_ref()],
         bump = vault_state.vault_bump,
     )]
     pub vault: SystemAccount<'info>,
@@ -103,6 +104,7 @@ impl<'info> Payment<'info> {
             to: self.signer.to_account_info(),
         };
         let seeds = &[
+            b"vault",
             self.vault_state.to_account_info().key.as_ref(),
             &[self.vault_state.vault_bump],
         ];
@@ -126,7 +128,8 @@ pub struct Close<'info> {
     )]
     pub vault_state: Account<'info, VaultState>,
     #[account(
-        seeds = [b"vault", signer.key().as_ref()],
+        mut,
+        seeds = [b"vault", vault_state.key().as_ref()],
         bump = vault_state.vault_bump,
     )]
     pub vault: SystemAccount<'info>,
@@ -141,6 +144,7 @@ impl<'info> Close<'info> {
             to: self.signer.to_account_info(),
         };
         let seeds = &[
+            b"vault",
             self.vault_state.to_account_info().key.as_ref(),
             &[self.vault_state.vault_bump],
         ];
