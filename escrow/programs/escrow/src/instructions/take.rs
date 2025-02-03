@@ -8,7 +8,7 @@ use anchor_spl::{
 use crate::states::*;
 
 #[derive(Accounts)]
-#[instruction(seed:u64)]
+#[instruction()]
 pub struct Take<'info> {
     #[account(mut)]
     pub taker: Signer<'info>,
@@ -22,20 +22,20 @@ pub struct Take<'info> {
       associated_token::mint=mint_a,
       associated_token::authority=taker,
   )]
-    pub taker_mint_a_ata: InterfaceAccount<'info, TokenAccount>,
+    pub taker_mint_a_ata: Box<InterfaceAccount<'info, TokenAccount>>,
     #[account(
       mut,
-      associated_token::mint=mint_a,
+      associated_token::mint=mint_b,
       associated_token::authority=taker,
   )]
-    pub taker_mint_b_ata: InterfaceAccount<'info, TokenAccount>,
+    pub taker_mint_b_ata: Box<InterfaceAccount<'info, TokenAccount>>,
     #[account(
       init_if_needed,
       payer=taker,
       associated_token::mint=mint_b,
       associated_token::authority=maker,
   )]
-    pub maker_mint_b_ata: InterfaceAccount<'info, TokenAccount>,
+    pub maker_mint_b_ata: Box<InterfaceAccount<'info, TokenAccount>>,
     #[account(
       mut,
       close=taker,
@@ -94,7 +94,7 @@ impl<'info> Take<'info> {
         let cpi_program = self.token_program.to_account_info();
 
         let cpi_account = CloseAccount {
-            authority: self.taker.to_account_info(),
+            authority: self.escrow.to_account_info(),
             account: self.vault.to_account_info(),
             destination: self.taker.to_account_info(),
         };

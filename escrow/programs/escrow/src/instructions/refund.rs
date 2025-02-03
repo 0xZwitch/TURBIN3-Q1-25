@@ -22,7 +22,7 @@ pub struct Refund<'info> {
     #[account(
     mut,
     close = maker,
-    seeds = [b"escrow", escrow.maker.to_bytes().as_ref(), escrow.seed.to_le_bytes().as_ref()],
+    seeds = [b"escrow", maker.key.as_ref(), escrow.seed.to_le_bytes().as_ref()],
     bump = escrow.bump,
   )]
     pub escrow: Account<'info, EscrowState>,
@@ -44,9 +44,9 @@ impl<'info> Refund<'info> {
             mint: self.mint_a.to_account_info(),
             to: self.maker_mint_a_ata.to_account_info(),
             from: self.vault.to_account_info(),
-            authority: self.maker.to_account_info(),
+            authority: self.escrow.to_account_info(),
         };
-        let cpi_ctx = CpiContext::new(cpi_program, cpi_account);
+        let cpi_ctx = CpiContext::new(cpi_program.clone(), cpi_account);
 
         transfer_checked(cpi_ctx, self.vault.amount, self.mint_a.decimals)?;
         Ok(())
@@ -56,7 +56,7 @@ impl<'info> Refund<'info> {
         let cpi_program = self.token_program.to_account_info();
 
         let cpi_account = CloseAccount {
-            authority: self.maker.to_account_info(),
+            authority: self.escrow.to_account_info(),
             account: self.vault.to_account_info(),
             destination: self.maker.to_account_info(),
         };
