@@ -96,7 +96,7 @@ impl<'info> Deposit<'info> {
         // deposit token y
         self.deposit_token(false, y)?;
         // mint lp token
-        self.mint_lp_token(amount);
+        self.mint_lp_token(amount)?;
         Ok(())
     }
 
@@ -120,7 +120,7 @@ impl<'info> Deposit<'info> {
 
         let ctx = CpiContext::new(program, account);
 
-        transfer(ctx, amount);
+        transfer(ctx, amount)?;
         Ok(())
     }
 
@@ -142,7 +142,7 @@ impl<'info> Deposit<'info> {
 
         let ctx = CpiContext::new_with_signer(program, account, signer_seeds);
 
-        mint_to(ctx, amount);
+        mint_to(ctx, amount)?;
         Ok(())
     }
 }

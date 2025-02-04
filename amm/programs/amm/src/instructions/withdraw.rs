@@ -1,7 +1,7 @@
 use anchor_lang::prelude::*;
 use anchor_spl::{
     associated_token::AssociatedToken,
-    token::{burn, mint_to, transfer, Burn, Mint, MintTo, Token, TokenAccount, Transfer},
+    token::{burn, transfer, Burn, Mint, Token, TokenAccount, Transfer},
 };
 use constant_product_curve::ConstantProduct;
 
@@ -90,7 +90,7 @@ impl<'info> Withdraw<'info> {
         // withdraw token y
         self.withdraw_token(false, amounts.y)?;
         // burn lp token
-        self.burn_lp_token(amount);
+        self.burn_lp_token(amount)?;
         Ok(())
     }
 
@@ -122,7 +122,7 @@ impl<'info> Withdraw<'info> {
 
         let ctx = CpiContext::new_with_signer(program, account, signer_seeds);
 
-        transfer(ctx, amount);
+        transfer(ctx, amount)?;
 
         Ok(())
     }
@@ -137,7 +137,7 @@ impl<'info> Withdraw<'info> {
 
         let ctx = CpiContext::new(program, account);
 
-        burn(ctx, amount);
+        burn(ctx, amount)?;
         Ok(())
     }
 }
