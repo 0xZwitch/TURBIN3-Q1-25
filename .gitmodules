@@ -1,0 +1,3 @@
+[submodule "kinspace"]
+	path = kinspace
+	url = https://github.com/0xZwitch/kinspace
